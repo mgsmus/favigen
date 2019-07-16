@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from PIL import Image
-from shutil import make_archive
+from shutil import make_archive, rmtree
 from pathlib import Path
 import argparse
 import sys
@@ -52,6 +52,13 @@ class Favigen:
 
         if not os.path.isdir(self.output_path):
             os.makedirs(self.output_path)
+
+    def remove_dirs(self):
+        if os.path.isdir(self.tmp_path):
+            rmtree(self.tmp_path)
+
+        if os.path.isdir(self.output_path):
+            rmtree(self.output_path)
 
     @staticmethod
     def get_filename():
