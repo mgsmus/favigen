@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from PIL import Image
 from shutil import make_archive
 from pathlib import Path
