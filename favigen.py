@@ -53,7 +53,8 @@ class Favigen:
         if not os.path.isdir(self.output_path):
             os.makedirs(self.output_path)
 
-    def get_filename(self):
+    @staticmethod
+    def get_filename():
         parser = argparse.ArgumentParser()
         parser.add_argument("file", nargs='?', help="Source PNG file")
         filename = parser.parse_args().file
