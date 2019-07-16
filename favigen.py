@@ -1,11 +1,12 @@
 from PIL import Image
-from shutil import make_archive, copy
+from shutil import make_archive
 from pathlib import Path
 import argparse
 import sys
 import os
 import math
 import datetime
+import extras
 
 icons = {
     "android-icon-144x144.png":   [144, 144],
@@ -79,10 +80,15 @@ def resize(image, size, format="PNG"):
     return bg.convert('RGBA')
 
 
-def copy_extras():
-    copy("{}/browserconfig.xml".format(DATA_PATH), "{}/browserconfig.xml".format(TMP_PATH))
-    copy("{}/manifest.json".format(DATA_PATH), "{}/manifest.json".format(TMP_PATH))
-    copy("{}/readme.txt".format(DATA_PATH), "{}/readme.txt".format(TMP_PATH))
+def create_extras():
+    with open("{}/browserconfig.xml".format(TMP_PATH), "w") as file:
+        file.write(extras.browserconfig_xml)
+
+    with open("{}/manifest.json".format(TMP_PATH), "w") as file:
+        file.write(extras.manifest_json)
+
+    with open("{}/html.txt".format(TMP_PATH), "w") as file:
+        file.write(extras.html_txt)
 
 
 def process():
@@ -107,7 +113,7 @@ def create_zip():
 
 def main():
     make_dirs()
-    copy_extras()
+    create_extras()
     process()
     create_zip()
 
