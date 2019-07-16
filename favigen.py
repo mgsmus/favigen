@@ -43,22 +43,27 @@ TMP_PATH = "{}/{}".format(BASE_PATH, TMP_DIR)
 OUTPUT_PATH = "{}/{}".format(BASE_PATH, OUTPUT_DIR)
 DATA_PATH = "{}/{}".format(BASE_PATH, DATA_DIR)
 
-if not os.path.isdir(TMP_PATH):
-    os.makedirs(TMP_PATH)
 
-if not os.path.isdir(OUTPUT_PATH):
-    os.makedirs(OUTPUT_PATH)
+def make_dirs():
+    if not os.path.isdir(TMP_PATH):
+        os.makedirs(TMP_PATH)
 
-parser = argparse.ArgumentParser()
-parser.add_argument("file", nargs='?', help="Source PNG file")
+    if not os.path.isdir(OUTPUT_PATH):
+        os.makedirs(OUTPUT_PATH)
 
-file = parser.parse_args().file
 
-if file is None:
-    sys.exit("Error: Please provide a file")
+def get_filename():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("file", nargs='?', help="Source PNG file")
+    filename = parser.parse_args().file
 
-if not os.path.isfile(file):
-    sys.exit("Error: File not found")
+    if filename is None:
+        sys.exit("Error: Please provide a file")
+
+    if not os.path.isfile(filename):
+        sys.exit("Error: File not found")
+
+    return filename
 
 
 def resize(image, size, format="PNG"):
@@ -74,23 +79,38 @@ def resize(image, size, format="PNG"):
     return bg.convert('RGBA')
 
 
-with Image.open(file) as image:
-    if not image.format == 'PNG':
-        sys.exit("Error: Not a PNG file")
+def copy_extras():
+    copy("{}/browserconfig.xml".format(DATA_PATH), "{}/browserconfig.xml".format(TMP_PATH))
+    copy("{}/manifest.json".format(DATA_PATH), "{}/manifest.json".format(TMP_PATH))
+    copy("{}/readme.txt".format(DATA_PATH), "{}/readme.txt".format(TMP_PATH))
 
-    for filename, size in icons.items():
-        im = resize(image, size)
-        im.save("{}/{}".format(TMP_PATH, filename))
 
-    im = resize(image, [16, 16], "ICO")
-    im.save("{}/favicon.ico".format(TMP_PATH))
+def process():
+    with Image.open(get_filename()) as image:
+        if not image.format == 'PNG':
+            sys.exit("Error: Not a PNG file")
 
-copy("{}/browserconfig.xml".format(DATA_PATH), "{}/browserconfig.xml".format(TMP_PATH))
-copy("{}/manifest.json".format(DATA_PATH), "{}/manifest.json".format(TMP_PATH))
-copy("{}/readme.txt".format(DATA_PATH), "{}/readme.txt".format(TMP_PATH))
+        for filename, size in icons.items():
+            im = resize(image, size)
+            im.save("{}/{}".format(TMP_PATH, filename))
 
-zip_name = datetime.datetime.now().strftime("%Y-%m-%d-%H%I%S")
-make_archive("{}/{}".format(OUTPUT_PATH, zip_name), "zip", "tmp")
+        im = resize(image, [16, 16], "ICO")
+        im.save("{}/favicon.ico".format(TMP_PATH))
 
-sys.exit("Success! Please check {} directory for generated zip file ({}.zip) or {} directory for unzipped files"
-         .format(OUTPUT_DIR, zip_name, TMP_DIR))
+
+def create_zip():
+    zip_name = datetime.datetime.now().strftime("%Y-%m-%d-%H%I%S")
+    make_archive("{}/{}".format(OUTPUT_PATH, zip_name), "zip", "tmp")
+    sys.exit("Success! Please check {} directory for generated zip file ({}.zip) or {} directory for unzipped files"
+             .format(OUTPUT_DIR, zip_name, TMP_DIR))
+
+
+def main():
+    make_dirs()
+    copy_extras()
+    process()
+    create_zip()
+
+
+if __name__ == "__main__":
+    main()
