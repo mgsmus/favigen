@@ -9,48 +9,45 @@ import datetime
 import extras
 
 icons = {
-    "android-icon-144x144.png":   [144, 144],
-    "android-icon-192x192.png":   [192, 192],
-    "android-icon-36x36.png":     [36, 36],
-    "android-icon-48x48.png":     [48, 48],
-    "android-icon-72x72.png":     [72, 72],
-    "android-icon-96x96.png":     [96, 96],
-    "apple-icon.png":             [192, 192],
-    "apple-icon-114x114.png":     [114, 114],
-    "apple-icon-120x120.png":     [120, 120],
-    "apple-icon-144x144.png":     [144, 144],
-    "apple-icon-152x152.png":     [152, 152],
-    "apple-icon-180x180.png":     [180, 180],
-    "apple-icon-57x57.png":       [57, 57],
-    "apple-icon-60x60.png":       [60, 60],
-    "apple-icon-72x72.png":       [72, 72],
-    "apple-icon-76x76.png":       [76, 76],
+    "android-icon-144x144.png": [144, 144],
+    "android-icon-192x192.png": [192, 192],
+    "android-icon-36x36.png": [36, 36],
+    "android-icon-48x48.png": [48, 48],
+    "android-icon-72x72.png": [72, 72],
+    "android-icon-96x96.png": [96, 96],
+    "apple-icon.png": [192, 192],
+    "apple-icon-114x114.png": [114, 114],
+    "apple-icon-120x120.png": [120, 120],
+    "apple-icon-144x144.png": [144, 144],
+    "apple-icon-152x152.png": [152, 152],
+    "apple-icon-180x180.png": [180, 180],
+    "apple-icon-57x57.png": [57, 57],
+    "apple-icon-60x60.png": [60, 60],
+    "apple-icon-72x72.png": [72, 72],
+    "apple-icon-76x76.png": [76, 76],
     "apple-icon-precomposed.png": [192, 192],
-    "favicon-16x16.png":          [16, 16],
-    "favicon-32x32.png":          [32, 32],
-    "favicon-96x96.png":          [96, 96],
-    "ms-icon-144x144.png":        [144, 144],
-    "ms-icon-150x150.png":        [150, 150],
-    "ms-icon-310x310.png":        [310, 310],
-    "ms-icon-70x70.png":          [70, 70],
+    "favicon-16x16.png": [16, 16],
+    "favicon-32x32.png": [32, 32],
+    "favicon-96x96.png": [96, 96],
+    "ms-icon-144x144.png": [144, 144],
+    "ms-icon-150x150.png": [150, 150],
+    "ms-icon-310x310.png": [310, 310],
+    "ms-icon-70x70.png": [70, 70],
 }
 
-BASE_PATH = str(Path(__file__).resolve().parent)
-
-TMP_DIR = "tmp"
-OUTPUT_DIR = "output"
-DATA_DIR = "data"
-TMP_PATH = "{}/{}".format(BASE_PATH, TMP_DIR)
-OUTPUT_PATH = "{}/{}".format(BASE_PATH, OUTPUT_DIR)
-DATA_PATH = "{}/{}".format(BASE_PATH, DATA_DIR)
+base_path = Path(__file__).resolve().parent
+tmp_dir = "tmp"
+output_dir = "output"
+tmp_path = os.path.join(base_path, tmp_dir)
+output_path = os.path.join(base_path, output_dir)
 
 
 def make_dirs():
-    if not os.path.isdir(TMP_PATH):
-        os.makedirs(TMP_PATH)
+    if not os.path.isdir(tmp_path):
+        os.makedirs(tmp_path)
 
-    if not os.path.isdir(OUTPUT_PATH):
-        os.makedirs(OUTPUT_PATH)
+    if not os.path.isdir(output_path):
+        os.makedirs(output_path)
 
 
 def get_filename():
@@ -81,13 +78,13 @@ def resize(image, size, format="PNG"):
 
 
 def create_extras():
-    with open("{}/browserconfig.xml".format(TMP_PATH), "w") as file:
+    with open(os.path.join(tmp_path, 'browserconfig.xml'), "w") as file:
         file.write(extras.browserconfig_xml)
 
-    with open("{}/manifest.json".format(TMP_PATH), "w") as file:
+    with open(os.path.join(tmp_path, 'manifest.json'), "w") as file:
         file.write(extras.manifest_json)
 
-    with open("{}/html.txt".format(TMP_PATH), "w") as file:
+    with open(os.path.join(tmp_path, 'html.txt'), "w") as file:
         file.write(extras.html_txt)
 
 
@@ -98,17 +95,17 @@ def process():
 
         for filename, size in icons.items():
             im = resize(image, size)
-            im.save("{}/{}".format(TMP_PATH, filename))
+            im.save(os.path.join(tmp_path, filename))
 
         im = resize(image, [16, 16], "ICO")
-        im.save("{}/favicon.ico".format(TMP_PATH))
+        im.save(os.path.join(tmp_path, "favicon.ico"))
 
 
 def create_zip():
     zip_name = datetime.datetime.now().strftime("%Y-%m-%d-%H%I%S")
-    make_archive("{}/{}".format(OUTPUT_PATH, zip_name), "zip", "tmp")
+    make_archive(os.path.join(output_path, zip_name), "zip", "tmp")
     sys.exit("Success! Please check {} directory for generated zip file ({}.zip) or {} directory for unzipped files"
-             .format(OUTPUT_DIR, zip_name, TMP_DIR))
+             .format(output_dir, zip_name, tmp_dir))
 
 
 def main():
