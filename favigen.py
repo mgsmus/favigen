@@ -46,7 +46,7 @@ class Favigen:
             "ms-icon-70x70.png":          [70, 70],
         }
 
-        self.parser = self.create_argparser()
+        self.parser = self.argparser()
 
     def make_dirs(self):
         if not os.path.isdir(self.tmp_path):
@@ -63,7 +63,7 @@ class Favigen:
             rmtree(self.output_path)
 
     @staticmethod
-    def create_argparser():
+    def argparser():
         parser = argparse.ArgumentParser()
         parser.add_argument("file", nargs='?', help="Source PNG file")
         return parser
