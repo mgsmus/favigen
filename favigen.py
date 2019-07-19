@@ -93,14 +93,14 @@ class Favigen:
         return bg.convert('RGBA')
 
     def create_extras(self):
-        with open(os.path.join(self.tmp_path, 'browserconfig.xml'), "w") as file:
-            file.write(extras.browserconfig_xml)
+        with open(os.path.join(self.tmp_path, 'browserconfig.xml'), "w") as f:
+            f.write(extras.browserconfig_xml)
 
-        with open(os.path.join(self.tmp_path, 'manifest.json'), "w") as file:
-            file.write(extras.manifest_json)
+        with open(os.path.join(self.tmp_path, 'manifest.json'), "w") as f:
+            f.write(extras.manifest_json)
 
-        with open(os.path.join(self.tmp_path, 'html.txt'), "w") as file:
-            file.write(extras.html_txt)
+        with open(os.path.join(self.tmp_path, 'html.txt'), "w") as f:
+            f.write(extras.html_txt)
 
     def process(self):
         with Image.open(self.get_filename()) as image:
