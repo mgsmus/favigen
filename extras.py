@@ -1,4 +1,6 @@
-browserconfig_xml = """
+"""Extra file contents"""
+
+BROWSERCONFIG_XML = r"""
 <?xml version="1.0" encoding="utf-8"?>
 <browserconfig>
     <msapplication>
@@ -12,7 +14,7 @@ browserconfig_xml = """
 </browserconfig>
 """
 
-manifest_json = """
+MANIFEST_JSON = r"""
 {
  "name": "App",
  "icons": [
@@ -56,7 +58,7 @@ manifest_json = """
 }
 """
 
-html_txt = """
+HTML_TXT = r"""
 <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
 <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
 <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">

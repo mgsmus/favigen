@@ -1,17 +1,22 @@
 #!/usr/bin/env python
 
-from PIL import Image
-from shutil import make_archive, rmtree
-from pathlib import Path
+"""
+Favigen is a very simple Python application for creating common favicon and app icons.
+"""
+
 import argparse
 import sys
 import os
 import math
 import datetime
+from shutil import make_archive, rmtree
+from pathlib import Path
+from PIL import Image
 import extras
 
 
 class Favigen:
+    """Favigen, favicon and app icon maker"""
 
     def __init__(self):
         self.base_path = Path(__file__).resolve().parent
@@ -49,6 +54,7 @@ class Favigen:
         self.parser = self.argparser()
 
     def make_dirs(self):
+        """Create output and tmp directories"""
         if not os.path.isdir(self.tmp_path):
             os.makedirs(self.tmp_path)
 
@@ -56,6 +62,7 @@ class Favigen:
             os.makedirs(self.output_path)
 
     def remove_dirs(self):
+        """Remove output and tmp directories"""
         if os.path.isdir(self.tmp_path):
             rmtree(self.tmp_path)
 
@@ -64,11 +71,15 @@ class Favigen:
 
     @staticmethod
     def argparser():
+        """Create Argument Parser
+        :returns argparse.ArgumentParser()
+        """
         parser = argparse.ArgumentParser()
         parser.add_argument("file", nargs='?', help="Source PNG file")
         return parser
 
     def get_filename(self):
+        """Get first argument as file name"""
         filename = self.parser.parse_args().file
 
         if filename is None:
@@ -80,29 +91,37 @@ class Favigen:
         return filename
 
     @staticmethod
-    def resize(image, size, format="PNG"):
-        im = image.copy()
-        im.thumbnail((size[0], size[1]), Image.BICUBIC)
-        bg = Image.new('RGBA', (size[0], size[1]), (255, 255, 255, 0))
+    def resize(image, size, fmt="PNG"):
+        """Resize image
+        :param image: Image, image object
+        :param size: List
+        :returns: Image object
+        :rtype: Image
+        """
+        image_copy = image.copy()
+        image_copy.thumbnail((size[0], size[1]), Image.BICUBIC)
+        new_image = Image.new('RGBA', (size[0], size[1]), (255, 255, 255, 0))
         position = (
-            int(math.ceil((size[0] - im.size[0]) / 2)),
-            int(math.ceil((size[1] - im.size[1]) / 2))
+            int(math.ceil((size[0] - image_copy.size[0]) / 2)),
+            int(math.ceil((size[1] - image_copy.size[1]) / 2))
         )
-        bg.paste(im, position)
-        bg.format = format
-        return bg.convert('RGBA')
+        new_image.paste(image_copy, position)
+        new_image.format = fmt
+        return new_image.convert('RGBA')
 
     def create_extras(self):
-        with open(os.path.join(self.tmp_path, 'browserconfig.xml'), "w") as f:
-            f.write(extras.browserconfig_xml)
+        """Create extra files"""
+        with open(os.path.join(self.tmp_path, 'browserconfig.xml'), "w") as extra_file:
+            extra_file.write(extras.BROWSERCONFIG_XML)
 
-        with open(os.path.join(self.tmp_path, 'manifest.json'), "w") as f:
-            f.write(extras.manifest_json)
+        with open(os.path.join(self.tmp_path, 'manifest.json'), "w") as extra_file:
+            extra_file.write(extras.MANIFEST_JSON)
 
-        with open(os.path.join(self.tmp_path, 'html.txt'), "w") as f:
-            f.write(extras.html_txt)
+        with open(os.path.join(self.tmp_path, 'html.txt'), "w") as extra_file:
+            extra_file.write(extras.HTML_TXT)
 
     def process(self):
+        """Create required folders, files and resize images"""
         with Image.open(self.get_filename()) as image:
             if not image.format == 'PNG':
                 sys.exit("Error: Not a PNG file")
@@ -111,21 +130,22 @@ class Favigen:
             self.create_extras()
 
             for filename, size in self.icons.items():
-                im = self.resize(image, size)
-                im.save(os.path.join(self.tmp_path, filename))
+                icon_image = self.resize(image, size)
+                icon_image.save(os.path.join(self.tmp_path, filename))
 
-            im = self.resize(image, [16, 16], "ICO")
-            im.save(os.path.join(self.tmp_path, "favicon.ico"))
+            icon_image = self.resize(image, [16, 16], "ICO")
+            icon_image.save(os.path.join(self.tmp_path, "favicon.ico"))
 
     def create_zip(self):
+        """Pack generated images as zip file"""
         zip_name = datetime.datetime.now().strftime("%Y-%m-%d-%H%I%S")
         make_archive(os.path.join(self.output_path, zip_name), "zip", "tmp")
-        sys.exit(
-            "Success! Please check {} directory for generated zip file ({}.zip) or {} directory for unzipped files"
-                .format(self.output_dir, zip_name, self.tmp_dir))
+        message = "Success! Please check {} directory for generated zip file " \
+                  "({}.zip) or {} directory for unzipped files "
+        sys.exit(message.format(self.output_dir, zip_name, self.tmp_dir))
 
 
 if __name__ == "__main__":
-    favigen = Favigen()
-    favigen.process()
-    favigen.create_zip()
+    FAVIGEN = Favigen()
+    FAVIGEN.process()
+    FAVIGEN.create_zip()
