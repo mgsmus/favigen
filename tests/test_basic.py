@@ -25,4 +25,4 @@ class FavigenTestCase(unittest.TestCase):
         b = os.path.join(favigen.tmp_path, 'browserconfig.xml')
         m = os.path.join(favigen.tmp_path, 'manifest.json')
         h = os.path.join(favigen.tmp_path, 'html.txt')
-        self.assertTrue(os.path.exists(b and m and h))
+        self.assertTrue(os.path.exists(b) and os.path.exists(m) and os.path.exists(m))
