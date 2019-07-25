@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/mgsmus/favigen.svg?branch=master)](https://travis-ci.org/mgsmus/favigen)
+
 # Favigen
 Favigen is a very simple Python application for creating common favicon and app icons.
 
