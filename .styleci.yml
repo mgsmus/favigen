@@ -1,0 +1,4 @@
+py:
+  version: 3
+  finder:
+    name: "*.py"
